@@ -1,0 +1,18 @@
+{
+  "id": "io.github.ayoaak.ito.mangadex",
+  "name": "MangaDex",
+  "version": "0.1.0",
+  "min_app_version": "1.0.0",
+  "url": "https://mangadex.org",
+  "sourceUrl": "https://github.com/ayoaak/ito-altstore-source/tree/main/sources/mangadex",
+  "contentRating": 1,
+  "nsfw": 0,
+  "language": "en",
+  "languages": ["en"],
+  "type": "manga",
+  "author": "ayoaak",
+  "description": "Japanese-origin manga from MangaDex with English-translated chapters.",
+  "archived": false,
+  "archived_reason": ""
+}
+
