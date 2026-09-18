@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "sources/mangadex/**"
+      - ".gitignore"
       - ".github/workflows/build-ito-repo.yml"
   workflow_dispatch:
 
