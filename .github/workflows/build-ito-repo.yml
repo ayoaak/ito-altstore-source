@@ -1,0 +1,65 @@
+name: Build Ito MangaDex repository
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "sources/mangadex/**"
+      - ".github/workflows/build-ito-repo.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ito-mangadex-repository
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache Rust build data
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: sources/mangadex
+
+      - name: Install official Ito packager
+        run: cargo install --git https://github.com/itoapp/ito-pkg.git --locked ito-pkg
+
+      - name: Build and verify MangaDex plugin
+        run: |
+          ito-pkg pack --path sources/mangadex
+          ito-pkg verify sources/mangadex/ito-mangadex.ito
+
+      - name: Generate Ito repository
+        run: |
+          rm -rf .build/ito-packages repo
+          mkdir -p .build/ito-packages
+          cp sources/mangadex/ito-mangadex.ito .build/ito-packages/
+          ito-pkg repo \
+            --input .build/ito-packages \
+            --output repo \
+            --name "ayoaak Ito Sources" \
+            --url "https://raw.githubusercontent.com/ayoaak/ito-altstore-source/main/repo" \
+            --description "Ito-native source plugins maintained by ayoaak."
+
+      - name: Publish generated repository files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add repo
+          if git diff --cached --quiet; then
+            echo "Generated repository is unchanged."
+          else
+            git commit -m "build: update Ito plugin repository"
+            git push
+          fi
