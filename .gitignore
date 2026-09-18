@@ -1,3 +1,2 @@
-/target/
-*.ito
-
+/sources/**/target/
+/sources/**/*.ito
